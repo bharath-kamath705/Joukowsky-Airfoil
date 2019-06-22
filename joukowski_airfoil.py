@@ -46,14 +46,17 @@ plt.axis('equal'), plt.grid(True)
 
 # grid in polar coordinates
 Rlim = 5                          # domain limit in r 
-Nr, Ntheta = 100, 145             # number of grid points in r and theta
+Nr, Ntheta = 10, 145             # number of grid points in r and theta
 r = np.linspace(R_0, Rlim, Nr)
 theta = np.linspace(0, 2 * np.pi, Ntheta)   
-R, THETA = np.meshgrid(r, theta)
+R, T = np.meshgrid(r, theta)
 
 # convert polar grid to cartesian 
-
-
+X = R * np.cos(T)
+Y = R * np.sin(T)
+plt.figure('grid')
+plt.scatter(X, Y)
+plt.axis('equal')
 
 ## generate grid
 #N = 50           # number of points in each direction
