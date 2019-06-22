@@ -7,10 +7,21 @@ import numpy as np
 import math
 from matplotlib import pyplot as plt
 
+"""
+For cambered airfoil use parameters
+c = 1.0
+h, k = 0.1, 0.1                          
+R_0 =math.sqrt((c - h)**2 + k**2)
+
+For symmetric use
+c = 1.0                      
+h, k = -0.15, 0
+R_0 = 1.15     
+"""
 # Joukowski transform parameters
-c = 1.0                                  # transform constant
-h, k = 0.1, 0.1                          # center of circle in z plane
-R_0 = math.sqrt((c - h)**2 + k**2)         # circle radius
+c = 1.0                                  # transform parameter
+h, k = -0.15, 0                          # center of circle in z plane
+R_0 = 1.15                               # circle radius
 
 # ===== Joukoski transform definitions ======
 
@@ -46,17 +57,25 @@ plt.axis('equal'), plt.grid(True)
 
 # grid in polar coordinates
 Rlim = 5                          # domain limit in r 
-Nr, Ntheta = 10, 145             # number of grid points in r and theta
+Nr, Ntheta = 100, 145             # number of grid points in r and theta
 r = np.linspace(R_0, Rlim, Nr)
 theta = np.linspace(0, 2 * np.pi, Ntheta)   
 R, T = np.meshgrid(r, theta)
 
 # convert polar grid to cartesian 
-X = R * np.cos(T)
-Y = R * np.sin(T)
+X = R * np.cos(T) + h
+Y = R * np.sin(T) + k
+Z = X + Y*1j
 plt.figure('grid')
-plt.scatter(X, Y)
+plt.scatter(X, Y, s=1)
 plt.axis('equal')
+
+# Joukoski transform on grid
+zeta_grid = Z + c**2 / Z
+plt.figure('zeta plane grid')
+plt.scatter(zeta_grid.real, zeta_grid.imag, s=1)
+plt.axis('equal')
+
 
 ## generate grid
 #N = 50           # number of points in each direction
