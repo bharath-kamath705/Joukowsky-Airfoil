@@ -8,17 +8,17 @@ import math
 from matplotlib import pyplot as plt
 
 # Joukowski transform parameters
-c = 1.0
-h, k = 0.1, 0.1    # center of circle in z plane
-R = math.sqrt((c - h)**2 + k**2)         # circle radius
+c = 1.0                                  # transform constant
+h, k = 0.1, 0.1                          # center of circle in z plane
+R_0 = math.sqrt((c - h)**2 + k**2)         # circle radius
 
 # ===== Joukoski transform definitions ======
 
 # curve in z plane
 n = 500
-x = np.linspace(-R + h, R + h, n)
-yu = np.sqrt(R**2 - (x - h)**2) + k    # upper curve
-yl = -np.sqrt(R**2 - (x - h)**2) + k   # lower curve
+x = np.linspace(-R_0 + h, R_0 + h, n)
+yu = np.sqrt(R_0**2 - (x - h)**2) + k    # upper curve
+yl = -np.sqrt(R_0**2 - (x - h)**2) + k   # lower curve
 
 # hack to fix NaNs in yu, yl if sqrt(very small number) occurs
 yu[np.argwhere(np.isnan(yu))] = k
@@ -31,7 +31,6 @@ zl = x + yl * 1j   # lower curve
 zeta_l = zl + c**2 / zl
 zeta_u = zu + c**2 / zu
 
-
 # ====== plot z plane and zeta plane curves ========
 
 plt.figure('zeta plane')
@@ -42,6 +41,18 @@ plt.axis('equal'), plt.grid(True)
 plt.figure('z plane')
 plt.plot(x, yu), plt.plot(x, yl)
 plt.axis('equal'), plt.grid(True)
+
+#===== generating the grid ===========================
+
+# grid in polar coordinates
+Rlim = 5                          # domain limit in r 
+Nr, Ntheta = 100, 145             # number of grid points in r and theta
+r = np.linspace(R_0, Rlim, Nr)
+theta = np.linspace(0, 2 * np.pi, Ntheta)   
+R, THETA = np.meshgrid(r, theta)
+
+# convert polar grid to cartesian 
+
 
 
 ## generate grid
