@@ -6,6 +6,7 @@ by Conformal Mapping
 import numpy as np
 import math
 from matplotlib import pyplot as plt
+import pflow
 
 """
 For cambered airfoil use parameters
@@ -53,11 +54,13 @@ zeta_u = zu + c**2 / zu
 fig1, ax1 = plt.subplots(1,2)
 fig1.suptitle('$z$ and $ \\xi $ plane curves', fontsize=22)
 
+# z plane
 ax1[0].plot(x, yu), ax1[0].plot(x, yl)
 ax1[0].axis('equal'), ax1[0].grid(True)
 ax1[0].set_xlabel('$x$', fontsize=20)
 ax1[0].set_ylabel('$iy$', fontsize=20)
 
+# zeta plane
 ax1[1].plot(zeta_l.real, zeta_l.imag)
 ax1[1].plot(zeta_u.real, zeta_u.imag)
 ax1[1].axis('equal'), ax1[1].grid(True)
@@ -86,13 +89,50 @@ zeta_grid = Z + c**2 / Z
 fig2, ax2 = plt.subplots(1,2)
 fig2.suptitle('$z$ and $ \\xi $ plane grid', fontsize=22)
 
+# z plane
 ax2[0].scatter(X, Y, s=1)
 ax2[0].axis('equal')
 ax2[0].set_xlabel('$x$', fontsize=20)
 ax2[0].set_ylabel('$iy$', fontsize=20)
 
+# zeta plane
 ax2[1].scatter(zeta_grid.real, zeta_grid.imag, s=1)
 ax2[1].axis('equal')
 ax2[1].set_xlabel('$ Re(\\xi) $', fontsize=20)
 ax2[1].set_ylabel('$Img (\\xi) $', fontsize=20)
 #----------------------------------------------------------
+
+# ============ Solving flow over the airfoil ===============
+U = 1.0                         # Uniform flow velocity
+aoa = 0.0                       # angle of attack
+Dstr = R_0**2 * 2 * math.pi * U   # doublet strength
+Vstr = 0                        # vortex strength
+
+# velocity field
+u = pflow.vortex([h], [k], [Vstr], X, Y)[0] + pflow.doublet([h], [k], [Dstr], X, Y)[0] + pflow.freestream(U, aoa, X, Y)[0]
+v = pflow.vortex([h], [k], [Vstr], X, Y)[1] + pflow.doublet([h], [k], [Dstr], X, Y)[1] + pflow.freestream(U, aoa, X, Y)[1]
+
+# stream function 
+psi = pflow.vortex([h], [k], [Vstr], X, Y)[2] + pflow.doublet([h], [k], [Dstr], X, Y)[2] + pflow.freestream(U, aoa, X, Y)[2]
+
+# plot z plane and zeta plane streamlines
+fig3, ax3 = plt.subplots(1,2)
+fig3.suptitle('$z$ and $ \\xi $ plane streamlilnes', fontsize=22)
+
+# z plane
+ax3[0].contour(X, Y, psi, 30)            # streamlines
+ax3[0].plot(x, yu), ax3[0].plot(x, yl)   # cylinder curves
+ax3[0].set_xlabel('$x$', fontsize=20)
+ax3[0].set_ylabel('$iy$', fontsize=20)
+ax3[0].set_xlim([-Rlim, Rlim])
+ax3[0].set_ylim([-Rlim, Rlim])
+
+
+# zeta plane
+ax3[1].contour(zeta_grid.real, zeta_grid.imag, psi, 30)  # streamlines
+ax3[1].plot(zeta_l.real, zeta_l.imag)                    # airfoil curve
+ax3[1].plot(zeta_u.real, zeta_u.imag)                    # airfoil curve
+ax3[1].set_xlabel('$ Re(\\xi) $', fontsize=20)
+ax3[1].set_ylabel('$Img (\\xi) $', fontsize=20)
+ax3[1].set_xlim([-Rlim, Rlim])
+ax3[1].set_ylim([-Rlim, Rlim])
