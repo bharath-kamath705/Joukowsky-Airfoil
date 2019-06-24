@@ -26,9 +26,9 @@ R_0 = 1.15                          # circle radius
 
 
 # Joukowski transform parameters
-c = 1.0                                  # transform parameter
-h, k = -0.15, 0                          # center of circle in z plane
-R_0 = 1.15                               # circle radius
+c = 1.0                             # transform parameter
+h, k = -0.15, 0                     # center of circle in z plane
+R_0 = 1.15                          # circle radius 
 
 # ===== Joukoski transform curves ============================
 
@@ -103,17 +103,29 @@ ax2[1].set_ylabel('$Img (\\xi) $', fontsize=20)
 #----------------------------------------------------------
 
 # ============ Solving flow over the airfoil ===============
-U = 1.0                         # Uniform flow velocity
-aoa = 0.0                       # angle of attack
+U = 1.0                           # Uniform flow velocity
+aoa = 0.0                         # angle of attack
 Dstr = R_0**2 * 2 * math.pi * U   # doublet strength
 Vstr = 0                        # vortex strength
 
-# velocity field
+# velocity field in z plane
 u = pflow.vortex([h], [k], [Vstr], X, Y)[0] + pflow.doublet([h], [k], [Dstr], X, Y)[0] + pflow.freestream(U, aoa, X, Y)[0]
 v = pflow.vortex([h], [k], [Vstr], X, Y)[1] + pflow.doublet([h], [k], [Dstr], X, Y)[1] + pflow.freestream(U, aoa, X, Y)[1]
 
 # stream function 
 psi = pflow.vortex([h], [k], [Vstr], X, Y)[2] + pflow.doublet([h], [k], [Dstr], X, Y)[2] + pflow.freestream(U, aoa, X, Y)[2]
+
+# velocity field in zeta plane
+dzeta_dz = 1 - (c/Z)**2
+V_zeta = (u - v * 1j) / dzeta_dz
+u_zeta = V_zeta.real
+v_zeta = -V_zeta.imag
+
+
+# pressure coefficients
+cp_z = pflow.cp_get(u, v, U)                 # z plane
+cp_zeta = pflow.cp_get(u_zeta, v_zeta, U)    # zeta plane
+
 
 # plot z plane and zeta plane streamlines
 fig3, ax3 = plt.subplots(1,2)
@@ -136,3 +148,45 @@ ax3[1].set_xlabel('$ Re(\\xi) $', fontsize=20)
 ax3[1].set_ylabel('$Img (\\xi) $', fontsize=20)
 ax3[1].set_xlim([-Rlim, Rlim])
 ax3[1].set_ylim([-Rlim, Rlim])
+
+# plot z plane and zeta plane velocity fields
+
+fig4, ax4 = plt.subplots(1,2)
+fig4.suptitle('$z$ and $ \\xi $ plane velocity field', fontsize=22)
+
+# z plane
+ax4[0].quiver(X, Y, u, v)            # streamlines
+ax4[0].plot(x, yu), ax4[0].plot(x, yl)   # cylinder curves
+ax4[0].set_xlabel('$x$', fontsize=20)
+ax4[0].set_ylabel('$iy$', fontsize=20)
+ax4[0].set_xlim([-Rlim, Rlim])
+ax4[0].set_ylim([-Rlim, Rlim])
+
+
+# zeta plane
+ax4[1].quiver(zeta_grid.real, zeta_grid.imag, u_zeta, v_zeta)  # streamlines
+ax4[1].plot(zeta_l.real, zeta_l.imag)                    # airfoil curve
+ax4[1].plot(zeta_u.real, zeta_u.imag)                    # airfoil curve
+ax4[1].set_xlabel('$ Re(\\xi) $', fontsize=20)
+ax4[1].set_ylabel('$Img (\\xi) $', fontsize=20)
+ax4[1].set_xlim([-Rlim, Rlim])
+ax4[1].set_ylim([-Rlim, Rlim])
+
+# plot pressure coefficient contours
+fig5, ax5 = plt.subplots(1,2)
+fig5.suptitle('Pressure coefficient $ C_p $ ', fontsize=22)
+# z plane
+contf1 = ax5[0].contourf(X, Y, cp_z, levels=100)
+ax5[0].set_xlabel('$x$', fontsize=20)
+ax5[0].set_ylabel('$iy$', fontsize=20)
+ax5[0].set_xlim([-Rlim, Rlim])
+ax5[0].set_ylim([-Rlim, Rlim])
+cbar1 = plt.colorbar(contf1)
+cbar1.set_label('$C_p$', fontsize=20)
+
+# zeta plane
+contf2 = ax5[1].contourf(zeta_grid.real, zeta_grid.imag, cp_zeta, levels=100)
+ax5[1].set_xlabel('$ Re(\\xi) $', fontsize=20)
+ax5[1].set_ylabel('$Img (\\xi) $', fontsize=20)
+ax5[1].set_xlim([-Rlim, Rlim])
+ax5[1].set_ylim([-Rlim, Rlim])
