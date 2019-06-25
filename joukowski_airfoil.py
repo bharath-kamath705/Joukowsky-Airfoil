@@ -184,7 +184,7 @@ ax4[1].set_ylim([-Rlim, Rlim])
 fig5, ax5 = plt.subplots(1,2)
 fig5.suptitle('Pressure coefficient $ C_p $ ', fontsize=22)
 # z plane
-contf1 = ax5[0].contourf(X, Y, cp_z, levels=np.linspace(-4, 4, 500))
+contf1 = ax5[0].contourf(X, Y, cp_z, levels=np.linspace(-1, 1, 500), extend='both')
 ax5[0].set_xlabel('$x$', fontsize=20)
 ax5[0].set_ylabel('$iy$', fontsize=20)
 ax5[0].set_xlim([-Rlim, Rlim])
@@ -193,7 +193,7 @@ cbar1 = plt.colorbar(contf1)
 cbar1.set_label('$C_p$', fontsize=20)
 
 # zeta plane
-contf2 = ax5[1].contourf(zeta_grid.real, zeta_grid.imag, cp_zeta, levels=np.linspace(-10, 15, 100))
+contf2 = ax5[1].contourf(zeta_grid.real, zeta_grid.imag, cp_zeta, levels=np.linspace(-1, 1, 100), extend='both')
 ax5[1].set_xlabel('$ Re(\\xi) $', fontsize=20)
 ax5[1].set_ylabel('$Img (\\xi) $', fontsize=20)
 ax5[1].set_xlim([-Rlim, Rlim])
