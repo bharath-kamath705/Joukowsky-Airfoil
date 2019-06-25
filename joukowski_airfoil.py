@@ -104,16 +104,24 @@ ax2[1].set_ylabel('$Img (\\xi) $', fontsize=20)
 
 # ============ Solving flow over the airfoil ===============
 U = 1.0                           # Uniform flow velocity
-aoa = 0.0                         # angle of attack
+aoa = 20.0 * math.pi / 180                         # angle of attack
 Dstr = R_0**2 * 2 * math.pi * U   # doublet strength
 Vstr = 0                        # vortex strength
 
-# velocity field in z plane
-u = pflow.vortex([h], [k], [Vstr], X, Y)[0] + pflow.doublet([h], [k], [Dstr], X, Y)[0] + pflow.freestream(U, aoa, X, Y)[0]
-v = pflow.vortex([h], [k], [Vstr], X, Y)[1] + pflow.doublet([h], [k], [Dstr], X, Y)[1] + pflow.freestream(U, aoa, X, Y)[1]
+# grid in the zp (z prime) reference frame
+Xp = (X - h) * np.cos(aoa) + (Y - k) * np.sin(aoa)
+Yp = (Y - k) * np.cos(aoa) - (X - h) * np.sin(aoa)
+
+# velocity field in zp plane
+up = pflow.vortex([0], [0], [Vstr], Xp, Yp)[0] + pflow.doublet([0], [0], [Dstr], Xp, Yp)[0] + pflow.freestream(U, 0, Xp, Yp)[0]
+vp = pflow.vortex([0], [0], [Vstr], Xp, Yp)[1] + pflow.doublet([0], [0], [Dstr], Xp, Yp)[1] + pflow.freestream(U, 0, Xp, Yp)[1]
 
 # stream function 
-psi = pflow.vortex([h], [k], [Vstr], X, Y)[2] + pflow.doublet([h], [k], [Dstr], X, Y)[2] + pflow.freestream(U, aoa, X, Y)[2]
+psi = pflow.vortex([0], [0], [Vstr], Xp, Yp)[2] + pflow.doublet([0], [0], [Dstr], Xp, Yp)[2] + pflow.freestream(U, 0, Xp, Yp)[2]
+
+# velocity field in the z plane
+u = up * np.cos(-aoa) + vp * np.sin(-aoa)
+v = vp * np.cos(-aoa) - up * np.sin(-aoa)
 
 # velocity field in zeta plane
 dzeta_dz = 1 - (c/Z)**2
@@ -176,7 +184,7 @@ ax4[1].set_ylim([-Rlim, Rlim])
 fig5, ax5 = plt.subplots(1,2)
 fig5.suptitle('Pressure coefficient $ C_p $ ', fontsize=22)
 # z plane
-contf1 = ax5[0].contourf(X, Y, cp_z, levels=100)
+contf1 = ax5[0].contourf(X, Y, cp_z, levels=np.linspace(-4, 4, 500))
 ax5[0].set_xlabel('$x$', fontsize=20)
 ax5[0].set_ylabel('$iy$', fontsize=20)
 ax5[0].set_xlim([-Rlim, Rlim])
@@ -185,7 +193,7 @@ cbar1 = plt.colorbar(contf1)
 cbar1.set_label('$C_p$', fontsize=20)
 
 # zeta plane
-contf2 = ax5[1].contourf(zeta_grid.real, zeta_grid.imag, cp_zeta, levels=100)
+contf2 = ax5[1].contourf(zeta_grid.real, zeta_grid.imag, cp_zeta, levels=np.linspace(-10, 15, 100))
 ax5[1].set_xlabel('$ Re(\\xi) $', fontsize=20)
 ax5[1].set_ylabel('$Img (\\xi) $', fontsize=20)
 ax5[1].set_xlim([-Rlim, Rlim])
