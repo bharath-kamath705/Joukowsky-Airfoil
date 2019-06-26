@@ -104,20 +104,27 @@ ax2[1].set_ylabel('$Img (\\xi) $', fontsize=20)
 
 # ============ Solving flow over the airfoil ===============
 U = 1.0                           # Uniform flow velocity
-aoa = 20.0 * math.pi / 180                         # angle of attack
+aoa = 20.0 * math.pi / 180         # angle of attack
 Dstr = R_0**2 * 2 * math.pi * U   # doublet strength
-Vstr = 0                        # vortex strength
+
 
 # grid in the zp (z prime) reference frame
 Xp = (X - h) * np.cos(aoa) + (Y - k) * np.sin(aoa)
 Yp = (Y - k) * np.cos(aoa) - (X - h) * np.sin(aoa)
 
+# Kutta condition
+Vstr = -Yp[0, 0] * 4 * np.pi * U
+
 # velocity field in zp plane
-up = pflow.vortex([0], [0], [Vstr], Xp, Yp)[0] + pflow.doublet([0], [0], [Dstr], Xp, Yp)[0] + pflow.freestream(U, 0, Xp, Yp)[0]
-vp = pflow.vortex([0], [0], [Vstr], Xp, Yp)[1] + pflow.doublet([0], [0], [Dstr], Xp, Yp)[1] + pflow.freestream(U, 0, Xp, Yp)[1]
+up = pflow.vortex([0], [0], [Vstr], Xp, Yp)[0] + pflow.doublet([0], [0],
+                 [Dstr], Xp, Yp)[0] + pflow.freestream(U, 0, Xp, Yp)[0]
+
+vp = pflow.vortex([0], [0], [Vstr], Xp, Yp)[1] + pflow.doublet([0], [0],
+                 [Dstr], Xp, Yp)[1] + pflow.freestream(U, 0, Xp, Yp)[1]
 
 # stream function 
-psi = pflow.vortex([0], [0], [Vstr], Xp, Yp)[2] + pflow.doublet([0], [0], [Dstr], Xp, Yp)[2] + pflow.freestream(U, 0, Xp, Yp)[2]
+psi = pflow.vortex([0], [0], [Vstr], Xp, Yp)[2] + pflow.doublet([0], [0], 
+                  [Dstr], Xp, Yp)[2] + pflow.freestream(U, 0, Xp, Yp)[2]
 
 # velocity field in the z plane
 u = up * np.cos(-aoa) + vp * np.sin(-aoa)
