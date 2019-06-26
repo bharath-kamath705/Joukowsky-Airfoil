@@ -147,7 +147,7 @@ fig3, ax3 = plt.subplots(1,2)
 fig3.suptitle('$z$ and $ \\xi $ plane streamlilnes', fontsize=22)
 
 # z plane
-ax3[0].contour(X, Y, psi, 30)            # streamlines
+ax3[0].contour(X, Y, psi, 50, colors='k', linestyles='None')   # streamlines
 ax3[0].plot(x, yu), ax3[0].plot(x, yl)   # cylinder curves
 ax3[0].set_xlabel('$x$', fontsize=20)
 ax3[0].set_ylabel('$iy$', fontsize=20)
@@ -156,7 +156,8 @@ ax3[0].set_ylim([-Rlim, Rlim])
 
 
 # zeta plane
-ax3[1].contour(zeta_grid.real, zeta_grid.imag, psi, 30)  # streamlines
+ax3[1].contour(zeta_grid.real, zeta_grid.imag, psi, 50, colors='k',
+   linestyles='None')  # streamlines
 ax3[1].plot(zeta_l.real, zeta_l.imag)                    # airfoil curve
 ax3[1].plot(zeta_u.real, zeta_u.imag)                    # airfoil curve
 ax3[1].set_xlabel('$ Re(\\xi) $', fontsize=20)
