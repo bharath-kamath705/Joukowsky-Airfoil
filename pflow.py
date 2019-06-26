@@ -86,7 +86,7 @@ def vortex(xv, yv, Vstr, X, Y):
         r = np.sqrt((X - xv[i])**2 + (Y - yv[i])**2)
         theta = np.arctan2(Y - yv[i], X - xv[i]) 
         
-        V = Vstr[i] / (2 * np.pi * r) # vortex velocity
+        V = - Vstr[i] / (2 * np.pi * r) # vortex velocity
             
         # velocity field
         u = u + V * np.cos(theta + np.pi / 2)
