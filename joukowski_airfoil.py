@@ -112,7 +112,7 @@ Dstr = R_0**2 * 2 * math.pi * U   # doublet strength
 Xp = (X - h) * np.cos(aoa) + (Y - k) * np.sin(aoa)
 Yp = (Y - k) * np.cos(aoa) - (X - h) * np.sin(aoa)
 
-# Kutta condition
+# Kutta condition (stagnation point at trailing edge)
 Vstr = -Yp[0, 0] * 4 * np.pi * U
 
 # velocity field in zp plane
